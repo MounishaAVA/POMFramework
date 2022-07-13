@@ -13,8 +13,12 @@ public class BaseClass {
 	
 		public void test1() {
 			
-		
-			logger.info("Hi");
+			
+			logger.error("Hello");
+			
+			logger.info("hello");
+			
+			
 		
 
 		}
