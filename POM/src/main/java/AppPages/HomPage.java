@@ -6,7 +6,11 @@ public class HomPage extends resusable.BaseClass {
 	
 	@Test
 	public void test() {
-	logger.info("Hi");
+	
+		logger.info("Hi");
+		
+		System.out.println();
+	
 	
 	
 	}
