@@ -4,11 +4,11 @@
   <test thread-count="5" name="Test">
   <classes>
 		
-		<class name="AppPages.HomPage" >
+		<class name="" >
 
 			<methods>
 				
-				<include name="test"/>
+				<include name=""/>
 
 			</methods>
 			</class>	
