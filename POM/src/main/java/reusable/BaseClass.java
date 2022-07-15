@@ -37,8 +37,16 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.safari.SafariDriver;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Parameters;
+
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.MediaEntityBuilder;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import ru.yandex.qatools.ashot.AShot;
@@ -47,6 +55,9 @@ import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
 public class BaseClass {
 
 	public static WebDriver driver;
+	String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+	public static ExtentReports extent;
+	public static ExtentTest test;
 
 	public static Logger log = Logger.getLogger(BaseClass.class.getName());
 
@@ -58,7 +69,7 @@ public class BaseClass {
 	// To instantiate browsers
 	@BeforeTest
 	@Parameters("browser")
-	public static void Login(String browser) throws InterruptedException, IOException, AWTException {
+	public void Login(String browser) throws InterruptedException, IOException, AWTException {
 
 		log.info("******************Browser launch started!!!*****************");
 
@@ -113,7 +124,7 @@ public class BaseClass {
 
 	// To read excel and store as excel hash table Key and value Configuration files
 	@SuppressWarnings("resource")
-	public static Hashtable<String, String> setMapData(String filepathConfig, String sheetIndex) throws IOException {
+	public Hashtable<String, String> setMapData(String filepathConfig, String sheetIndex) throws IOException {
 
 		FileInputStream fis = new FileInputStream(filepathConfig);
 
@@ -144,7 +155,7 @@ public class BaseClass {
 	}
 
 	// To get the row index by passing Test Script ID
-	public static int GetrowNum(String LookupVal, String filePath, String sheetIndex) {
+	public int GetrowNum(String LookupVal, String filePath, String sheetIndex) {
 		int Rowindex = 0;
 		try {
 			String toFind = LookupVal;
@@ -170,7 +181,7 @@ public class BaseClass {
 	}
 
 	// To read excel and store as hash map for test data
-	private static XSSFSheet getSheet(String filePathReadData, int sheetIndex) throws IOException {
+	private XSSFSheet getSheet(String filePathReadData, int sheetIndex) throws IOException {
 		FileInputStream fis = new FileInputStream(filePathReadData);
 		XSSFWorkbook workbook = new XSSFWorkbook(fis);
 		XSSFSheet sheet = workbook.getSheetAt(sheetIndex);
@@ -178,7 +189,7 @@ public class BaseClass {
 		return sheet;
 	}
 
-	public static Map<String, Map<String, String>> getExcelAsMap(String filePathReadData, String sheetIndex)
+	public Map<String, Map<String, String>> getExcelAsMap(String filePathReadData, String sheetIndex)
 			throws IOException {
 
 		int Index = Integer.parseInt(sheetIndex);
@@ -204,7 +215,7 @@ public class BaseClass {
 		return completeSheetData;
 	}
 
-	public static String getCellValueAsString(Cell cell) {
+	public String getCellValueAsString(Cell cell) {
 		String cellValue = null;
 		try {
 			switch (cell.getCellType()) {
@@ -239,8 +250,8 @@ public class BaseClass {
 	}
 
 	// To take screen shot of present screen
-	public WebDriver takeSnapShot(String Folderpath, String FolderName, String SSName, String Extension,
-			WebDriver webdriver) throws Exception {
+	public void takeSnapShot(String Folderpath, String FolderName, String SSName, String Extension, WebDriver webdriver)
+			throws Exception {
 
 		String scrFolder = Folderpath + FolderName + "/".toString();
 		new File(scrFolder).mkdir();
@@ -261,17 +272,17 @@ public class BaseClass {
 
 		}
 
-		// get the screenshot folder location from environment variable set in beginning of test
+		// get the screenshot folder location from environment variable set in beginning
+		// of test
 		String scrFolder1 = System.getProperty("scr.folder");
 
 		File scrFile = ((TakesScreenshot) webdriver).getScreenshotAs(OutputType.FILE);
 		// copy screenshot to screenshot folder
 		FileUtils.copyFile(scrFile, new File(scrFolder1 + SSName + "." + Extension));
-		return webdriver;
 	}
 
 	// To take screen shot of full screen
-	public WebDriver FullScreenShot(String Folderpath, String FolderName, String SSName, String Extension,
+	public void FullScreenShot(String Folderpath, String FolderName, String SSName, String Extension,
 			WebDriver webdriver) throws Exception {
 
 		String scrFolder = Folderpath + FolderName + "/".toString();
@@ -299,10 +310,202 @@ public class BaseClass {
 				.takeScreenshot(webdriver);
 		ImageIO.write(s.getImage(), Extension, new File(scrFolder1 + SSName + "." + Extension));
 
-		return webdriver;
+	}
+
+	@BeforeSuite
+	// To Write report in Extend report
+	public void StartReport() {
+		try {
+			ExtentSparkReporter reporter = new ExtentSparkReporter("./results" + timeStamp + ".html");
+			extent = new ExtentReports();
+			extent.attachReporter(reporter);
+		} catch (Exception e) {
+			log.error("Error in StartReport " + e.getMessage());
+		}
 
 	}
 
-	
-	
+	// To read configuration data
+	public Hashtable<String, String> ConfigDataRead() throws InterruptedException, IOException, AWTException {
+		Hashtable<String, String> ConfigData = null;
+		try {
+
+			ConfigData = setMapData(".\\Test Components\\Test configuration File.xlsx", "0");
+
+		} catch (Exception e) {
+
+			log.error("Error in ConfigDataRead " + e.getMessage());
+		}
+		return ConfigData;
+	}
+
+	// To read the Application locators data
+	public Hashtable<String, String> LocatorDataRead() throws InterruptedException, IOException, AWTException {
+		Hashtable<String, String> LocatorData = null;
+		try {
+
+			Hashtable<String, String> ConfigData = ConfigDataRead();
+			LocatorData = setMapData(ConfigData.get("LocatorFilePath"), ConfigData.get("SheetIndex"));
+
+		} catch (Exception e) {
+
+			log.error("Error in LocatorDataRead " + e.getMessage());
+		}
+		return LocatorData;
+	}
+
+	// To read test script
+	public Map<String, Map<String, String>> TestScriptaRead() throws InterruptedException, IOException, AWTException {
+
+		Map<String, Map<String, String>> TestScript = null;
+		try {
+
+			Hashtable<String, String> ConfigData = ConfigDataRead();
+
+			TestScript = getExcelAsMap(ConfigData.get("TestScriptpath"), ConfigData.get("SheetIndex"));
+
+		} catch (Exception e) {
+
+			log.error("Error in TestScriptRead " + e.getMessage());
+		}
+		return TestScript;
+
+	}
+
+	// To find the row index of a passed cell value
+	public int RowIndex(String testname) throws InterruptedException, IOException, AWTException {
+		int RI = 0;
+		try {
+
+			Hashtable<String, String> ConfigData = ConfigDataRead();
+			RI = GetrowNum(testname, ConfigData.get("TestScriptpath"), ConfigData.get("SheetIndex"));
+		} catch (Exception e) {
+
+			log.error("Error in RowIndex " + e.getMessage());
+		}
+		return RI;
+
+	}
+
+	// To read Test Data
+	public Map<String, Map<String, String>> TestDataRead() throws InterruptedException, IOException, AWTException {
+
+		Map<String, Map<String, String>> TestData = null;
+		try {
+
+			Hashtable<String, String> ConfigData = ConfigDataRead();
+
+			TestData = getExcelAsMap(ConfigData.get("TestDataFilePath"), ConfigData.get("SheetIndex"));
+
+		} catch (Exception e) {
+
+			log.error("Error in TestDataRead " + e.getMessage());
+		}
+		return TestData;
+
+	}
+
+	// To take screenshot of present screen
+	public String ScreenShot(String status, String testname) throws Exception {
+		try {
+			Hashtable<String, String> ConfigData = ConfigDataRead();
+
+			takeSnapShot(ConfigData.get("ScreenshotFolderPath"), status, testname,
+					ConfigData.get("ScreenshotExtension"), driver);
+		} catch (Exception e) {
+
+			log.error("Error in ScreenShot " + e.getMessage());
+		}
+
+		return status;
+	}
+
+	// To take screenshot of full screen
+	public String FullScreenShot(String status, String testname) throws Exception {
+		try {
+			Hashtable<String, String> ConfigData = ConfigDataRead();
+
+			takeSnapShot(ConfigData.get("ScreenshotFolderPath"), status, testname,
+					ConfigData.get("ScreenshotExtension"), driver);
+		} catch (Exception e) {
+
+			log.error("Error in FullScreenShot " + e.getMessage());
+		}
+
+		return status;
+	}
+
+	// To Write test details in Extend report
+	public void testDetails(String testnmae) throws InterruptedException, IOException, AWTException {
+		try {
+			Map<String, Map<String, String>> TestScript = TestScriptaRead();
+			int RI = RowIndex(testnmae);
+			String R = String.valueOf(RI);
+
+			test = extent.createTest(testnmae, TestScript.get(R).get("Test Script Description"));
+			test.assignCategory(TestScript.get(R).get("Module Name"));
+			test.assignCategory(TestScript.get(R).get("Testtype"));
+			test.assignCategory(TestScript.get(R).get("testCategory"));
+			test.assignCategory(TestScript.get(R).get("Severity"));
+			test.assignCategory(TestScript.get(R).get("Priority"));
+			test.assignAuthor(TestScript.get(R).get("Executed By"));
+		} catch (Exception e) {
+
+			log.error("Error in testDetails" + e.getMessage());
+		}
+	}
+
+	// To write result in extend report with present screen screenshot
+	public void ExtentReportSS(String Testname, String Status, String ResultMsg) throws Exception {
+		try {
+			if (Status.equalsIgnoreCase("Pass")) {
+				test.pass(ResultMsg,
+						MediaEntityBuilder.createScreenCaptureFromPath(ScreenShot(Status, Testname)).build());
+			} else if (Status.equalsIgnoreCase("Fail")) {
+				test.pass(ResultMsg,
+						MediaEntityBuilder.createScreenCaptureFromPath(ScreenShot(Status, Testname)).build());
+			} else if (Status.equalsIgnoreCase("Exception")) {
+				test.pass(ResultMsg,
+						MediaEntityBuilder.createScreenCaptureFromPath(ScreenShot(Status, Testname)).build());
+			}
+		} catch (Exception e) {
+
+			log.error("Error in ExtentReportSS" + e.getMessage());
+		}
+
+	}
+
+	// To write result in extend report with full screen screenshot
+	public void ExtentReportFSS(String Testname, String Status, String ResultMsg) throws Exception {
+		try {
+			if (Status.equalsIgnoreCase("Pass")) {
+				test.pass(ResultMsg,
+						MediaEntityBuilder.createScreenCaptureFromPath(FullScreenShot(Status, Testname)).build());
+			} else if (Status.equalsIgnoreCase("Fail")) {
+				test.pass(ResultMsg,
+						MediaEntityBuilder.createScreenCaptureFromPath(FullScreenShot(Status, Testname)).build());
+			} else if (Status.equalsIgnoreCase("Exception")) {
+				test.pass(ResultMsg,
+						MediaEntityBuilder.createScreenCaptureFromPath(FullScreenShot(Status, Testname)).build());
+			}
+		} catch (Exception e) {
+
+			log.error("Error in ExtentReportSS" + e.getMessage());
+		}
+
+	}
+
+	@AfterTest
+	public void postcondition() throws InterruptedException {
+		Thread.sleep(5000);
+		driver.quit();
+	}
+
+	@AfterSuite
+	// To Stop the extent report
+	public void stopReport() {
+		extent.flush();
+
+	}
+
 }
