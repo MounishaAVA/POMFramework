@@ -2,13 +2,16 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="Suite">
   <test thread-count="5" name="Test">
+  <parameter name="browser" value="chrome" />
   <classes>
 		
-		<class name="" >
+		<class name="main.ExecutionClass" >
 
 			<methods>
 				
-				<include name=""/>
+				<include name="TS_SDIR_016"/>
+				<include name="TS_SDIR_017"/>
+				<include name="TS_SDIR_019"/>
 
 			</methods>
 			</class>	
