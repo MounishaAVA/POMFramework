@@ -39,6 +39,7 @@ public class BaseClass {
 	public void logger() {
 		DOMConfigurator.configure(".\\src\\test\\resources\\log4j.xml");
 	}
+	
 
 	// To instantiate browsers
 	@BeforeTest
