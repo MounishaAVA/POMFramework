@@ -4,6 +4,7 @@ import java.awt.AWTException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -39,12 +40,12 @@ public class BaseClass {
 	public void logger() {
 		DOMConfigurator.configure(".\\src\\test\\resources\\log4j.xml");
 	}
-	
+
 
 	// To instantiate browsers
 	@BeforeTest
 	@Parameters("browser")
-	public void Login(String browser) throws InterruptedException, IOException, AWTException {
+	public void BrowserLaunch(String browser) throws InterruptedException, IOException, AWTException {
 
 		log.info("******************Browser launch started!!!*****************");
 
@@ -105,27 +106,25 @@ public class BaseClass {
 	ScreenShot SS = new ScreenShot();
 
 	// To read configuration data
-	public Hashtable<String, String> ConfigDataRead() throws InterruptedException, IOException, AWTException {
-		Hashtable<String, String> ConfigData = null;
+	public HashMap<String, String> ConfigDataRead() throws InterruptedException, IOException, AWTException {
+		HashMap<String, String> ConfigData = null;
 		try {
 
 			ConfigData = Excel.setMapData(
-					".\\Test Components\\Test configuration File.xlsx",
-					"0");
+					".\\Test Components\\Test configuration File.xlsx","0");
 		} catch (Exception e) {
 
 			log.error("Error in ConfigDataRead " + e.getMessage());
 		}
 		return ConfigData;
-
 	}
 
 	// To read the Application locators data
-	public Hashtable<String, String> LocatorDataRead() throws InterruptedException, IOException, AWTException {
-		Hashtable<String, String> LocatorData = null;
+	public HashMap<String, String> LocatorDataRead() throws InterruptedException, IOException, AWTException {
+		HashMap<String, String> LocatorData = null;
 		try {
 
-			Hashtable<String, String> ConfigData = ConfigDataRead();
+			HashMap<String, String> ConfigData = ConfigDataRead();
 			LocatorData = Excel.setMapData(ConfigData.get("LocatorFilePath"), ConfigData.get("SheetIndex"));
 		} catch (Exception e) {
 
@@ -140,7 +139,7 @@ public class BaseClass {
 		Map<String, Map<String, String>> TestScript = null;
 		try {
 
-			Hashtable<String, String> ConfigData = ConfigDataRead();
+			HashMap<String, String> ConfigData = ConfigDataRead();
 
 			TestScript = Excel.getExcelAsMap(ConfigData.get("TestScriptpath"), ConfigData.get("SheetIndex"));
 		} catch (Exception e) {
@@ -156,7 +155,7 @@ public class BaseClass {
 		int RI = 0;
 		try {
 
-			Hashtable<String, String> ConfigData = ConfigDataRead();
+			HashMap<String, String> ConfigData = ConfigDataRead();
 			RI = Excel.GetrowNum(testname, ConfigData.get("TestScriptpath"), ConfigData.get("SheetIndex"));
 		} catch (Exception e) {
 
@@ -172,7 +171,7 @@ public class BaseClass {
 		Map<String, Map<String, String>> TestData = null;
 		try {
 
-			Hashtable<String, String> ConfigData = ConfigDataRead();
+			HashMap<String, String> ConfigData = ConfigDataRead();
 
 			TestData = Excel.getExcelAsMap(ConfigData.get("TestDataFilePath"), ConfigData.get("SheetIndex"));
 		} catch (Exception e) {
@@ -186,7 +185,7 @@ public class BaseClass {
 	// To take screenshot of present screen
 	public String ScreenShot(String status, String testname) throws Exception {
 
-		Hashtable<String, String> ConfigData = ConfigDataRead();
+		HashMap<String, String> ConfigData = ConfigDataRead();
 		String path = ConfigData.get("ScreenshotFolderPath");
 		String Ext = ConfigData.get("ScreenshotExtension");
 		try {
@@ -204,7 +203,7 @@ public class BaseClass {
 
 	// To take screenshot of full screen
 	public String FullScreenShot(String status, String testname) throws Exception {
-		Hashtable<String, String> ConfigData = ConfigDataRead();
+		HashMap<String, String> ConfigData = ConfigDataRead();
 		String path = ConfigData.get("ScreenshotFolderPath");
 		String Ext = ConfigData.get("ScreenshotExtension");
 
@@ -220,11 +219,12 @@ public class BaseClass {
 
 	}
 
+	//To Start the extent report
 	@BeforeTest
 	public void startReport() {
 
 		try {
-			ExtentSparkReporter spark = new ExtentSparkReporter("Spark" + "_" + timeStamp + ".html");
+			ExtentSparkReporter spark = new ExtentSparkReporter(".\\reports\\"+"Spark" + "_" + timeStamp + ".html");
 			extent.attachReporter(spark);
 			
 			log.info("*******************Report Started!!!***************");
@@ -235,14 +235,15 @@ public class BaseClass {
 
 	}
 
+	
+	//To close the browser driver
 	@AfterTest
-	public void postcondition() throws InterruptedException {
+	public void DriverQuit() throws InterruptedException {
 		Thread.sleep(5000);
 		driver.quit();
 	}
 
 	// To Stop the extent report
-
 	@AfterTest
 	public void stopReport() {
 

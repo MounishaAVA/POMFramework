@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,7 @@ public class ExcelRead {
 	
 	// To read excel and store as excel hash table Key and value Configuration files
 	@SuppressWarnings("resource")
-	public Hashtable<String, String> setMapData(String filepathConfig, String sheetIndex) throws IOException {
+	public HashMap<String, String> setMapData(String filepathConfig, String sheetIndex) throws IOException {
 
 		FileInputStream fis = new FileInputStream(filepathConfig);
 
@@ -41,7 +40,7 @@ public class ExcelRead {
 
 		int lastRow = sheet.getLastRowNum();
 
-		Hashtable<String, String> my_dict = new Hashtable<String, String>();
+		HashMap<String, String> my_dict = new HashMap<String, String>();
 
 		for (int i = 0; i <= lastRow; i++) {
 

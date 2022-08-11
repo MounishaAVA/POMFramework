@@ -15,7 +15,7 @@ import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
 public class ScreenShot {
 	
 	// To take screen shot of present screen
-		public void takeSnapShot(String Folderpath, String FolderName, String SSName, String Extension, WebDriver webdriver)
+		public void takeSnapShot(String Folderpath, String FolderName, String SSName, String Extension, WebDriver driver)
 				throws Exception {
 
 			String scrFolder = Folderpath + FolderName + "/".toString();
@@ -41,7 +41,7 @@ public class ScreenShot {
 			// of test
 			String scrFolder1 = System.getProperty("scr.folder");
 
-			File scrFile = ((TakesScreenshot) webdriver).getScreenshotAs(OutputType.FILE);
+			File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 			// copy screenshot to screenshot folder
 			FileUtils.copyFile(scrFile, new File(scrFolder1 + SSName + "." + Extension));
 			
@@ -49,7 +49,7 @@ public class ScreenShot {
 		
 		// To take screen shot of full screen
 		public void FullScreenShot(String Folderpath, String FolderName, String SSName, String Extension,
-				WebDriver webdriver) throws Exception {
+				WebDriver driver) throws Exception {
 
 			String scrFolder = Folderpath + FolderName + "/".toString();
 			new File(scrFolder).mkdir();
@@ -73,7 +73,7 @@ public class ScreenShot {
 			String scrFolder1 = System.getProperty("scr.folder");
 			// To capture full page screenshot and store the image
 			ru.yandex.qatools.ashot.Screenshot s = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1000))
-					.takeScreenshot(webdriver);
+					.takeScreenshot(driver);
 			ImageIO.write(s.getImage(), Extension, new File(scrFolder1 + SSName + "." + Extension));
 
 		}

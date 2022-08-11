@@ -7,10 +7,11 @@
         <methods>
           <include name="TS_SDIR_016"/>
           <include name="postcondition"/>
+          <include name="TS_SDIR_019"/>
+          <include name="TS_SDIR_017"/>
           <include name="stopReport"/>
           <include name="Login"/>
           <include name="startReport"/>
-          <include name="setValue"/>
         </methods>
       </class> <!-- main.ExecutionClass -->
     </classes>

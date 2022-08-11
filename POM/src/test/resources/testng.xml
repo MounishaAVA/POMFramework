@@ -9,9 +9,8 @@
 
 			<methods>
 				
+				<include name="TC_SDIR_001"/>
 				<include name="TS_SDIR_016"/>
-				<include name="TS_SDIR_017"/>
-				<include name="TS_SDIR_019"/>
 
 			</methods>
 			</class>	

@@ -28,7 +28,7 @@ public class SeleniumActions extends BaseClass {
 		return Text;
 
 	}
-	
+
 	public String GetAttribute(String Locator, String Value)
 
 	{
@@ -37,8 +37,6 @@ public class SeleniumActions extends BaseClass {
 		return Text;
 
 	}
-	
-	
 
 	public void SendKeys(String Locator, String InputVal) {
 
@@ -79,7 +77,7 @@ public class SeleniumActions extends BaseClass {
 		return Dislayed;
 
 	}
-	
+
 	public Boolean IsSelected(String Locator)
 
 	{
@@ -170,7 +168,7 @@ public class SeleniumActions extends BaseClass {
 			break;
 		case "sendKeys":
 			WebElement sendKeys = driver.findElement(By.xpath(Locator));
-			actions.sendKeys(sendKeys);
+			actions.sendKeys(sendKeys, "Value");
 			actions.perform();
 			break;
 		}
@@ -197,7 +195,7 @@ public class SeleniumActions extends BaseClass {
 
 		}
 	}
-	
+
 	public void ActionClassKeyUp(String key)
 
 	{
@@ -237,42 +235,40 @@ public class SeleniumActions extends BaseClass {
 	}
 
 	public void SwitchToDC() {
-		
+
 		driver.switchTo().defaultContent();
 
 	}
-	
+
 	public String GetWindowHandle() {
 
-				
 		String Handle = driver.getWindowHandle();
-		
+
 		return Handle;
-		
+
 	}
-	
+
 	public Set<String> GetWindowHandles() {
 
-		
 		Set<String> Handles = driver.getWindowHandles();
-		
+
 		return Handles;
-		
+
 	}
-	
+
 	public void SwitchToWindow(String Handle) {
-		
+
 		driver.switchTo().window(Handle);
 	}
 
 	public String GetWinddowTitle(String Handle) {
-		
+
 		String Title = driver.switchTo().window(Handle).getTitle();
-		
-		return Title;		
-		
+
+		return Title;
+
 	}
-	
+
 	public void ImplicitWait(int WaitTime)
 
 	{
@@ -319,41 +315,9 @@ public class SeleniumActions extends BaseClass {
 		case "visibilityOf":
 			wait.until(ExpectedConditions.visibilityOf((WebElement) By.xpath(Locator)));
 			break;
-		// Need to check
-		// case "visibilityOfAllElements":
-		// wait.until(ExpectedConditions.visibilityOfAllElements((List<WebElement>)
-		// By.xpath(Locator)));
-		// break;
-		// Need to check
 		case "elementSelectionStateToBe":
 			wait.until(ExpectedConditions.elementSelectionStateToBe(By.xpath(Locator), false));
 			break;
-		}
-	}
-
-	public void ExplicitWaitText(Duration WaitTime, String Locator, String ExpectedCondition, String Text) {
-		WebDriverWait wait = new WebDriverWait(driver, WaitTime);
-		switch (ExpectedCondition) {
-
-		case "invisibilityOfElementWithText":
-			wait.until(ExpectedConditions.invisibilityOfElementWithText(By.xpath(Locator), Text));
-			break;
-		case "textToBePresentInElement":
-			wait.until(ExpectedConditions.textToBePresentInElement((WebElement) By.xpath(Locator), Text));
-			break;
-		case "textToBePresentInElementLocated":
-			wait.until(ExpectedConditions.textToBePresentInElementLocated(By.xpath(Locator), Text));
-			break;
-		case "textToBePresentInElementValue":
-			wait.until(ExpectedConditions.textToBePresentInElementValue(By.xpath(Locator), Text));
-			break;
-		case "titleIs":
-			wait.until(ExpectedConditions.titleIs(Text));
-			break;
-		case "titleContains":
-			wait.until(ExpectedConditions.titleContains(Text));
-			break;
-
 		}
 	}
 
@@ -367,14 +331,25 @@ public class SeleniumActions extends BaseClass {
 		case "accept":
 			driver.switchTo().alert().accept();
 			break;
-		// case "getText":
-		// String Text = driver.switchTo().alert().getText();
-		// break;
-		/*
-		 * case "sendKeys": driver.switchTo().alert().sendKeys(Value); break;
-		 */
+
+		case "sendKeys":
+
+			break;
 
 		}
+
+	}
+
+	public String AlertgetText(String method) {
+
+		String Text = driver.switchTo().alert().getText();
+		return Text;
+
+	}
+
+	public void AlertsendKeys(String Value) {
+
+		driver.switchTo().alert().sendKeys(Value);
 
 	}
 
@@ -385,10 +360,7 @@ public class SeleniumActions extends BaseClass {
 		act.doubleClick(ele).perform();
 	}
 
-	public void Attachments(String Locator, String FilePath) throws AWTException, InterruptedException {
-
-		DoubleClick(Locator);
-		Thread.sleep(5000);
+	public void Attachments(String FilePath) throws AWTException, InterruptedException {
 
 		Robot rb = new Robot();
 
